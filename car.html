@@ -6,71 +6,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Car Game</title>
     <style>
+        /* ... existing reset styles ... */
         * {
             margin: 0;
             padding: 0;
-            font-family: 'Lobster', cursive;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
         }
 
+        body {
+            background: #121212;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* Game Container */
         .game {
-            background: linear-gradient(#444, #222);
             height: 100vh;
+            background: radial-gradient(ellipse at center, #1a1a1a 0%, #000000 100%);
+            overflow: hidden;
+            position: relative;
         }
 
-        .hide {
-            display: none;
-        }
-
+        /* Start Screen */
         .startScreen {
-            width: 500px;
-            height: 120px;
-            line-height: 22px;
+            width: 90%;
+            max-width: 500px;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 2;
-            background-color: rgb(43, 205, 226);
+            background: rgba(0, 0, 0, 0.85);
+            padding: 20px 30px;
+            border-radius: 12px;
+            border: 2px solid #00eaff;
             text-align: center;
-            border-bottom: 2px solid rgb(132, 197, 197);
-            padding: 10px;
-            border-radius: 6px;
-        }
-
-        .score,
-        .highScore {
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            text-align: center;
-            background-color: rgb(100, 224, 156);
-            width: 200px;
-            color: rgb(59, 40, 40);
-            line-height: 40px;
-            border-radius: 4px;
-            font-size: 1.2em;
+            box-shadow: 0 0 20px #00eaff80;
             z-index: 10;
+            opacity: 1;
+            transition: all 0.8s ease-in-out;
         }
 
-        .highScore {
-            top: 60px;
+        .startScreen.hide {
+            transform: translate(-50%, -60%) scale(0.9);
+            opacity: 0;
+        }
+
+        .startScreen p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #ffffffdd;
         }
 
         .ClickToStart {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #00eaff;
             cursor: pointer;
+            margin-bottom: 10px;
+            animation: pulse 1.5s infinite ease-in-out;
         }
 
+        /* Score UI */
+        .score,
+        .highScore {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid #00eaff;
+            color: #00eaff;
+            box-shadow: 0 0 10px #00eaff50;
+            font-size: 1.1em;
+            z-index: 10;
+            transition: transform 0.2s ease;
+        }
+
+        .highScore {
+            top: 70px;
+        }
+
+        /* Game Area */
         .gameArea {
             height: 100vh;
             width: 400px;
             margin: auto;
             position: relative;
-            background-color: rgb(32, 32, 32);
+            background: #1c1c1c;
             overflow: hidden;
-            border-left: 4px dashed white;
-            border-right: 4px dashed white;
+            border-left: 5px solid #00eaff;
+            border-right: 5px solid #00eaff;
+            box-shadow: 0 0 20px #00eaff40;
         }
 
+        /* Player's Car */
         .car {
             height: 85px;
             width: 50px;
@@ -80,39 +111,48 @@
             background-position: center;
             position: absolute;
             top: 520px;
+            animation: slideIn 0.7s ease-out;
         }
 
-        .explosion {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            pointer-events: none;
-            background: radial-gradient(circle, rgba(255, 100, 0, 1) 0%, rgba(255, 0, 0, 0.6) 40%, transparent 70%);
-            animation: explode 0.5s ease-out forwards;
-            z-index: 20;
-        }
-
+        /* Opponent Cars */
         .Opponents {
             height: 85px;
             width: 50px;
-            border-radius: 8px;
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
             position: absolute;
             top: 520px;
-            aspect-ratio: 50 / 85;
+            border-radius: 6px;
         }
 
+        /* Road Lines */
         .roadLines {
             height: 100px;
-            width: 10px;
-            background-color: rgb(255, 251, 0);
+            width: 6px;
+            background-color: #ffff00;
             position: absolute;
-            margin-left: 195px;
+            margin-left: 197px;
+            box-shadow: 0 0 10px #ffff00a0;
         }
 
+        /* Explosion Effect */
+        .explosion {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(255, 150, 0, 1) 0%, rgba(255, 0, 0, 0.7) 40%, transparent 70%);
+            animation: explode 0.6s ease-out forwards, blastFlash 0.4s ease;
+            z-index: 20;
+            box-shadow: 0 0 30px 10px rgba(255, 50, 0, 0.5);
+        }
+.scorePulse {
+  transform: scale(1.2);
+}
+
+        /* ------------------ Animations ------------------ */
         @keyframes explode {
             0% {
                 transform: scale(0.5);
@@ -120,11 +160,70 @@
             }
 
             100% {
-                transform: scale(2.5);
+                transform: scale(3);
                 opacity: 0;
             }
         }
+
+        @keyframes blastFlash {
+            0% {
+                filter: brightness(2);
+            }
+
+            100% {
+                filter: brightness(1);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                top: 700px;
+                opacity: 0;
+            }
+
+            to {
+                top: 520px;
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        /* Responsive Tweaks */
+        @media (max-width: 500px) {
+            .gameArea {
+                width: 90%;
+            }
+
+            .score,
+            .highScore {
+                font-size: 1em;
+                padding: 8px 12px;
+                left: 10px;
+            }
+
+            .highScore {
+                top: 65px;
+            }
+
+            .startScreen {
+                padding: 15px 20px;
+            }
+        }
     </style>
+
 </head>
 
 <body>
@@ -132,10 +231,12 @@
         <div class="score">Score: 0</div>
         <div class="highScore">High Score: 0</div>
         <div class="startScreen">
-            <p class="ClickToStart">Click here to start the game <br><br></p>
-            <p>INSTRUCTIONS: <br />
-                Use Arrow keys or Tilt your phone <br />
-                If you hit any car, the game will end</p>
+            <p class="ClickToStart">▶ Tap or Click to Start</p>
+            <p>
+                <strong>Instructions:</strong><br />
+                Use <strong>Arrow Keys</strong> or <strong>Tilt</strong> your phone.<br />
+                Avoid crashing into other cars!
+            </p>
         </div>
         <div class="gameArea"></div>
     </div>
@@ -253,6 +354,8 @@
                 }
 
                 score.innerHTML = 'Score: ' + player.score;
+                score.classList.add('scorePulse');
+                setTimeout(() => score.classList.remove('scorePulse'), 150);
                 highScore.innerHTML = 'High Score: ' + player.highScore;
 
                 window.requestAnimationFrame(Play);
@@ -300,53 +403,53 @@
         }
 
         function endGame() {
-                player.isStart = false;
+            player.isStart = false;
 
-                const car = document.querySelector('.car');
+            const car = document.querySelector('.car');
 
-                // Create explosion
-                const explosion = document.createElement('div');
-                explosion.classList.add('explosion');
-                explosion.style.left = (car.offsetLeft - 25) + 'px';
-                explosion.style.top = (car.offsetTop - 25) + 'px';
+            // Create explosion
+            const explosion = document.createElement('div');
+            explosion.classList.add('explosion');
+            explosion.style.left = (car.offsetLeft - 25) + 'px';
+            explosion.style.top = (car.offsetTop - 25) + 'px';
 
-                gameArea.appendChild(explosion);
+            gameArea.appendChild(explosion);
 
-                // Remove explosion after animation
-                setTimeout(() => {
-                    explosion.remove();
-                    startScreen.classList.remove('hide');
-                }, 700);
+            // Remove explosion after animation
+            setTimeout(() => {
+                explosion.remove();
+                startScreen.classList.remove('hide');
+            }, 700);
+        }
+        function requestMotionPermission() {
+            if (
+                typeof DeviceOrientationEvent !== 'undefined' &&
+                typeof DeviceOrientationEvent.requestPermission === 'function'
+            ) {
+                DeviceOrientationEvent.requestPermission()
+                    .then((response) => {
+                        if (response === 'granted') {
+                            window.addEventListener('deviceorientation', handleTilt);
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                // For non-iOS devices
+                window.addEventListener('deviceorientation', handleTilt);
             }
-    function requestMotionPermission() {
-        if (
-            typeof DeviceOrientationEvent !== 'undefined' &&
-            typeof DeviceOrientationEvent.requestPermission === 'function'
-        ) {
-            DeviceOrientationEvent.requestPermission()
-                .then((response) => {
-                    if (response === 'granted') {
-                        window.addEventListener('deviceorientation', handleTilt);
-                    }
-                })
-                .catch(console.error);
-        } else {
-            // For non-iOS devices
-            window.addEventListener('deviceorientation', handleTilt);
         }
-    }
-    function handleTilt(event) {
-        const tilt = event.gamma; // gamma is left/right tilt (-90 to 90)
+        function handleTilt(event) {
+            const tilt = event.gamma; // gamma is left/right tilt (-90 to 90)
 
-        if (!player.isStart) return;
+            if (!player.isStart) return;
 
-        // Sensitivity adjustment
-        if (tilt < -5 && player.x > 0) {
-            player.x -= player.speed * 0.6; // tilt left
-        } else if (tilt > 5 && player.x < 350) {
-            player.x += player.speed * 0.6; // tilt right
+            // Sensitivity adjustment
+            if (tilt < -5 && player.x > 0) {
+                player.x -= player.speed * 0.6; // tilt left
+            } else if (tilt > 5 && player.x < 350) {
+                player.x += player.speed * 0.6; // tilt right
+            }
         }
-    }
 
     </script>
 </body>
